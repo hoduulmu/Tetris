@@ -4,6 +4,9 @@
 
 ## 플레이 주소 : https://play.unity.com/mg/other/webgl-builds-372879
 
+## 유니티 실행
+- 유니티 실행시 Asset/Scenes/Tetris를 실행시켜주면 됩니다
+
 ## 설명
 - 테트리스 조각 및 색깔은 위키 가이드를 따랐습니다
   - https://tetris.fandom.com/wiki/Tetromino
