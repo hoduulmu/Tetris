@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// 테트리스 조각들이 올라가는 메인 보드판 로직
 public class Board : MonoBehaviour
 {
     public Tilemap Tilemap { get; private set; }
-    public TetrominoData[] tetrominos;
+
+    // 현 보드판에 활성화된 테트리스 조각
     public Piece ActivePiece { get; private set; }
-    public Vector3Int spawnPosition;
     public Vector2Int boardSize = new(10, 20);
+    public TetrominoData[] tetrominos;
+    public Vector3Int tileSpawnPosition;
     public GameManager gameManager;
 
+    // 보드판 바운더리
     public RectInt Bounds
     {
         get
@@ -19,6 +23,7 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 초기화
     public void Awake()
     {
         this.Tilemap = GetComponentInChildren<Tilemap>();
@@ -35,13 +40,15 @@ public class Board : MonoBehaviour
         SpawnPiece();
     }
 
+    // 테트리스 조각 랜덤 생성 및 생성시 유효한 포지션이 아니면 게임 오버
+    // 생성시 유효한 포지션이 아님 -> 이미 둘 곳이 없는 상태 -> 게임 오버
     public void SpawnPiece()
     {
         int random = Random.Range(0, tetrominos.Length);
         TetrominoData data = tetrominos[random];
-        ActivePiece.Initialize(this, spawnPosition, data);
+        ActivePiece.Initialize(this, tileSpawnPosition, data);
 
-        if (IsValidPosition(ActivePiece, spawnPosition))
+        if (IsValidPosition(ActivePiece, tileSpawnPosition))
         {
             Set(ActivePiece);
         }
@@ -56,6 +63,7 @@ public class Board : MonoBehaviour
         gameManager.GameOver();
     }
 
+    // 현 보드판 위에 테트리스 조각을 세팅
     public void Set(Piece piece)
     {
         for (int i = 0; i < piece.Cells.Length; i++)
@@ -65,6 +73,7 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 현 보드판 위에 테트리스 조각을 지움
     public void Clear(Piece piece)
     {
         for (int i = 0; i < piece.Cells.Length; i++)
@@ -74,6 +83,7 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 보드판 바운더리 및 현재 테트리스 조각들이 깔린 위치를 활용해 인자로 들어온 테트리스 조각을 둘 수 있는지 체크
     public bool IsValidPosition(Piece piece, Vector3Int position)
     {
         RectInt bounds = Bounds;
@@ -96,6 +106,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
+    // 보드판 라인이 꽉찼으면 라인 클리어 점수를 올리면서 라인을 지움
     public void ClearLines()
     {
         RectInt bounds = Bounds;
@@ -115,6 +126,7 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 해당 열이 모두 테트리스 조각으로 찼는지 체크하는 함수
     private bool IsLineFull(int row)
     {
         RectInt bounds = Bounds;
@@ -130,6 +142,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
+    // 인자로 들어온 열을 돌면서 테트리스 조각들을 지우고 위에 있는 테트리스 조각을 아래로 옮기는 함수
     private void LineClear(int row)
     {
         RectInt bounds = Bounds;

@@ -12,6 +12,7 @@ public enum Tetromino
     Z
 }
 
+// 테트리스 조각 데이터로 모양과 타일, 위치와 벽에 부딪혔을 시 테스트할 월킥 목록을 가지고 있음
 [System.Serializable]
 public struct TetrominoData
 {

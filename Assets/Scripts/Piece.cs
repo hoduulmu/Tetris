@@ -2,6 +2,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
+// 테트리스 조각 자체를 다루는 클래스
 public class Piece : MonoBehaviour
 {
     public Board Board { get; private set; }
@@ -34,6 +35,7 @@ public class Piece : MonoBehaviour
         }
     }
 
+    // 유저 입력에 따라 현 조각을 움직이거나 회전
     private void Update()
     {
         Board.Clear(this);
@@ -75,6 +77,7 @@ public class Piece : MonoBehaviour
         Board.Set(this);
     }
 
+    // 조각이 떨어지는 스텝을 정의 및 조각 고정
     private void Step()
     {
         stepTime = Time.time + stepDelay;
@@ -86,6 +89,7 @@ public class Piece : MonoBehaviour
         }
     }
 
+    // 조각 고정 및 보드판 라인 클리어 및 새 조각 생성
     private void Lock()
     {
         Board.Set(this);
@@ -93,6 +97,7 @@ public class Piece : MonoBehaviour
         Board.SpawnPiece();
     }
 
+    // 조각 드롭하는 함수
     public void HardDrop()
     {
         while (Move(Vector2Int.down))
@@ -102,6 +107,7 @@ public class Piece : MonoBehaviour
         Lock();
     }
 
+    // 조각을 움직이고 유효한 위치에 있는지 리턴하는 함수
     private bool Move(Vector2Int translation)
     {
         Vector3Int newPosition = this.Position;
@@ -119,6 +125,9 @@ public class Piece : MonoBehaviour
         return valid;
     }
 
+    // 조각을 회전하는 함수
+    // 요청된 방향에 따라 조각을 회전하고 조각의 회전 모양 인덱스를 구해 월킥 테스트
+    // 벽에 부딪혔을 경우를 위해 회전 가능을 테스트하며 위치를 조정하고 모두 실패할 경우 원복함
     private void Rotate(int direction)
     {
         int originalRotation = RotationIndex;
@@ -132,6 +141,7 @@ public class Piece : MonoBehaviour
         }
     }
 
+    // 넘어온 방향에 따라 조각 회전
     private void ApplyRotationMatrix(int direction)
     {
         for (int i = 0; i < Cells.Length; i++)
@@ -158,6 +168,7 @@ public class Piece : MonoBehaviour
         }
     }
 
+    // SRS 월킥 테스트 케이스를 모두 돌며 성공하면 바로 리턴
     private bool TestWallKicks(int rotationIndex, int rotationDirection)
     {
         int wallKickIndex = GetWallKickIndex(rotationIndex, rotationDirection);
@@ -173,6 +184,9 @@ public class Piece : MonoBehaviour
         return false;
     }
 
+    // 테스트할 월킥 인덱스를 가져옴
+    // 0 >> 1, 1 >> 0, 1 >> 2 처럼
+    // 오른쪽 회전의 인덱스가 모두 짝수인 것을 활용해 2배를 하고 왼쪽 회전일 경우 하나를 뺌
     private int GetWallKickIndex(int rotationIndex, int rotationDirection)
     {
         int wallKickIndex = rotationIndex * 2;
@@ -185,6 +199,7 @@ public class Piece : MonoBehaviour
         return Wrap(wallKickIndex, 0, Data.WallKicks.GetLength(0));
     }
 
+    // 인자 input이 항상 최소값, 최대값 사이의 값을 갖도록 래핑해주는 함수
     private int Wrap(int input, int min, int max)
     {
         if (input < min)
